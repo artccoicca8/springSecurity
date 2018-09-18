@@ -14,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,10 +34,14 @@ import com.bolsadeideas.springboot.app.models.service.IClienteService;
 import com.bolsadeideas.springboot.app.models.service.IUploadFileService;
 import com.bolsadeideas.springboot.app.util.paginator.PageRender;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 @Controller
 @SessionAttributes("cliente")
 public class ClienteController {
 
+	protected final Log logger = LogFactory.getLog(this.getClass()); 
 	@Autowired
 	private IClienteService clienteService;
 
@@ -75,8 +81,23 @@ public class ClienteController {
 
 	/** Listar es la pagina de inicio */
 	@RequestMapping(value = { "/listar","/"}, method = RequestMethod.GET)
-	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
+	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model
+			,Authentication authentication) {
 
+		if (authentication!=null) {
+			logger.info("El ususrio "+authentication.getName() + "inicio session ");
+		}
+		
+		
+		/**otra forma de obtener el objeto de atenticaition **/
+		
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication(); 
+		
+		if (auth!=null) {
+			logger.info("El user  "+auth.getName() + " inicio session ");
+		}
+		
 		Pageable pageRequest = PageRequest.of(page, 4);
 
 		Page<Cliente> clientes = clienteService.findAll(pageRequest);

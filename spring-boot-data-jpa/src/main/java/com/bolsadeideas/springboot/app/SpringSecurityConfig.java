@@ -10,9 +10,15 @@ import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.bolsadeideas.springboot.app.auth.handler.LoginSuccesHandler;
+
 @Configuration
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
+	
+	@Autowired
+	private LoginSuccesHandler successHandler; 
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
@@ -27,7 +33,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/eliminar/**").hasAnyRole("ADMIN")
 				.antMatchers("/factura/**").hasAnyRole("ADMIN")
 				.anyRequest().authenticated()
-				.and().formLogin().loginPage("/login")
+				.and()
+				.formLogin()
+				/** Se agraga un succes handler , para que notifique los ingresos satisfacotiios */
+				.successHandler(successHandler)
+				.loginPage("/login")
 				.permitAll()
 				.and().logout().permitAll()
 				.and()

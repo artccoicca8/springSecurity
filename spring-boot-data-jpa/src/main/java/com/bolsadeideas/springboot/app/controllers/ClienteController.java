@@ -2,8 +2,10 @@ package com.bolsadeideas.springboot.app.controllers;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Collection;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -56,7 +62,6 @@ public class ClienteController {
 		try {
 			recurso = uploadFileService.load(filename);
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -82,7 +87,8 @@ public class ClienteController {
 	/** Listar es la pagina de inicio */
 	@RequestMapping(value = { "/listar","/"}, method = RequestMethod.GET)
 	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model
-			,Authentication authentication) {
+			,Authentication authentication
+			,HttpServletRequest request) {
 
 		if (authentication!=null) {
 			logger.info("El ususrio "+authentication.getName() + "inicio session ");
@@ -97,6 +103,34 @@ public class ClienteController {
 		if (auth!=null) {
 			logger.info("El user  "+auth.getName() + " inicio session ");
 		}
+		
+		/***Validano los roles ***/
+		if (hasRole("ROLE_ADMIN")) {
+			 logger.info("Hola "+auth.getName()+" tienes acceso ");
+		} else {
+			 logger.info("Hola "+auth.getName()+" no tienes acceso ");
+		}
+		
+		/*** validando los roles ver 2**/
+		
+		/*** Se declara la mitad del  nombre del rol y se auto completa en el if */
+		SecurityContextHolderAwareRequestWrapper securityContext = new SecurityContextHolderAwareRequestWrapper(request, "ROLE_");
+		if (securityContext.isUserInRole("ADMIN")) {
+			logger.info("Usando SecurityContextHolderAwareRequestWrapper Hola "+auth.getName()+" tienes acceso ");
+		}else {
+			logger.info("Usando SecurityContextHolderAwareRequestWrapper Hola "+auth.getName()+" no  tienes acceso ");
+		} 
+			
+		
+		/*** Se declara la mitad del  nombre del rol y se auto completa en el if 
+		 * pero se usa el request como valor para obtener los roles */
+		if (request.isUserInRole("ADMIN")) {
+			logger.info("Usando HttpServletRequest Hola "+auth.getName()+" tienes acceso ");
+		}else {
+			logger.info("Usando HttpServletRequest Hola "+auth.getName()+" no  tienes acceso ");
+		} 
+			
+		
 		
 		Pageable pageRequest = PageRequest.of(page, 4);
 
@@ -193,4 +227,40 @@ public class ClienteController {
 		}
 		return "redirect:/listar";
 	}
+	
+	
+	private boolean hasRole(String role ) {
+		
+		/** Se obtiene el context de la aplicacion */
+		SecurityContext context = SecurityContextHolder.getContext(); 
+		if (context==null) {
+			return false ; 
+		}
+		
+		/** Se ontiene datos de la autenticacion **/
+		Authentication auth =context.getAuthentication(); 
+		if (auth==null) {
+			return false ;
+		}
+		
+		/** Obtenesmos la lista de todos los roles creado en la aplicacion */
+		Collection<? extends GrantedAuthority > authorities = auth.getAuthorities(); 
+		
+		/**Busca en la lista obtenia el rol que tiene el usuario **/
+//		for(GrantedAuthority authority: authorities) {
+//			
+//			if (role.equals(authority.getAuthority())) {
+//				logger.info("Hola usuario "+auth.getName()+" tu rol es "+authority.getAuthority() );
+//				return true;  
+//			}
+//			
+//		}
+//		
+//		return false ;
+		
+		/**Otra forma de hacr la busqueda es (devuelve unn boolean o si encuentra el rool )*/
+		return authorities.contains(new SimpleGrantedAuthority(role)); 
+		
+	}
+	
 }

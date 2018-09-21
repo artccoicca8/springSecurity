@@ -32,7 +32,7 @@ public class LoginController {
 		 * */
 		
 		if (error!=null) {
-			model.addAttribute("error", "Error en el usuatio o la contraseña");
+			model.addAttribute("error", "Error en el Usuario o la contraseña");
 		}
 		 
 		/**

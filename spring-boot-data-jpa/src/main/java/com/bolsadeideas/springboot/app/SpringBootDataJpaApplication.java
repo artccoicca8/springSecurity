@@ -15,8 +15,8 @@ public class SpringBootDataJpaApplication implements CommandLineRunner {
 	IUploadFileService uploadFileService;
 
 	
-	@Autowired 
-	private BCryptPasswordEncoder passwordEncoder;  
+//	@Autowired 
+//	private BCryptPasswordEncoder passwordEncoder;  
 	
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBootDataJpaApplication.class, args);
@@ -28,12 +28,18 @@ public class SpringBootDataJpaApplication implements CommandLineRunner {
 		uploadFileService.deleteAll();
 		uploadFileService.init();
 		
-		String passs = "132456";
 		
-		for (int i = 0; i < 2; i++) {
-		String bcryptPass= passwordEncoder.encode(passs) ; 
-		System.out.println(bcryptPass);
+		
+		/**
+		 * Metodo utilizado para la encriptacion de ddato s
+		 * 
+		 * **/
+//		String passs = "132456";
+//		
+//		for (int i = 0; i < 2; i++) {
+//		String bcryptPass= passwordEncoder.encode(passs) ; 
+//		System.out.println(bcryptPass);
 				
-		}
+//		}
 	}
 }

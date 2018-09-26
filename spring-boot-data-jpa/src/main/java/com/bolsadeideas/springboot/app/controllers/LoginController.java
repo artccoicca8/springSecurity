@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+
+
+/** Esta clase es referenciada como el login , por ende se mapea dentro de contexto del sprign , aqui
+ * solo se ve como hace el mapeo de los errors **/
 @Controller
 public class LoginController {
 
@@ -24,6 +28,7 @@ public class LoginController {
 			
 			attributes.addFlashAttribute("info", "ya iniciaste session prro");
 			
+			/** redireecione a a la pagian de incio (listar ) **/
 			return "redirect:/"; 
 		}
 		

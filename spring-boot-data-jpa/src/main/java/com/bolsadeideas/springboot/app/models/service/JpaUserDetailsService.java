@@ -20,7 +20,7 @@ import com.bolsadeideas.springboot.app.models.entity.Role;
 import com.bolsadeideas.springboot.app.models.entity.Usuario;
 
 
- /***se impleneta esta clase para la gestion del login*/
+ /***se implementa  esta clase para la gestion del login , que luego es inyectada en la configuracion del spring secirity */
 @Service("jpaUserDetailsService")
 public class JpaUserDetailsService implements UserDetailsService{
 
@@ -52,7 +52,7 @@ public class JpaUserDetailsService implements UserDetailsService{
 		  /** se obtiene los rolses del ususaior
 		   * y se va llenado la lista de authorities , para obtenre los roles de bd y llevarlos al contexto del spring  */
 		  for(Role role: usuario.getRoles()) {
-//	        	logger.info("Role: ".concat(role.getAuthority()));
+	        	logger.info("Role: ".concat(role.getAuthority()));
 	        	authorities.add(new SimpleGrantedAuthority(role.getAuthority()));
 	        }
 		  
